@@ -1,6 +1,7 @@
 // Dependencies
 const http = require('http')
 const url = require('url')
+const stringDecoder = require('string_decoder').StringDecoder
 
 // Server responds to all requests with a string
 const server = http.createServer((req, res) => {
@@ -19,17 +20,25 @@ const server = http.createServer((req, res) => {
 
     // Get the headers
     const headers = req.headers
+    
+    // Get the payloads, if any
+    const decoder = new stringDecoder('utf-8')
+    let buffer = ''
+    req.on('data', (data) => buffer += decoder.write(data))
+    req.on('end', () => {
+        // Send the response
+        res.end('Hello World')
 
-    // Send the response
-    res.end('Hello World')
+        // Log the request path
+        console.log('Path received: ', trimmedpath)
+        console.log('Method: ', method)
+        console.log('Query: ', queryStringObject)
+        console.log('Headers: ', headers)
+        console.log('Payloads: ', buffer)
 
-    // Log the request path
-    // console.log('Untrimmed: ', path)
-    console.log('Path received: ', trimmedpath)
-    console.log('Method: ', method)
-    console.log('Query: ', queryStringObject)
-    console.log('Headers: ', headers)
+    })
 
+    
 })
 
 // Server listens on port 8100
