@@ -30,7 +30,8 @@ const server = http.createServer((req, res) => {
 
         //Choose the handler
         var chosenHandler = typeof(router[trimmedpath]) == 'undefined' ? handlers.notFound : router[trimmedpath]
-
+        console.log(chosenHandler)
+        
         //Construct the data object to be sent to the handler
         var data = {
             'trimmedPath' : trimmedpath,
@@ -41,15 +42,15 @@ const server = http.createServer((req, res) => {
         }
 
         // Route the request to the handler
-        chosenHandler(data, function(statusCode, payload) {
+        chosenHandler(data, (statusCode, payload) => {
             statusCode = typeof(statusCode) == 'number' ? statusCode : 200
             payload = typeof(payload) == 'object' ? payload : {}
 
             var payloadString = JSON.stringify(payload)
 
-            res.writeHead(payloadString)
+            res.writeHead(statusCode)
             // Send the response
-            res.end('Response: ', statusCode, payloadString)
+            res.end('Response:'+ payloadString)
 
 
         })
@@ -68,7 +69,7 @@ const server = http.createServer((req, res) => {
     
 })
 
-// Server listens on port 8100
+// Server listens on port 8500
 server.listen(8500, () => console.log('Server is running on port 8500'))
 
 //Defining handlers
@@ -76,7 +77,7 @@ var handlers = {}
 
 //Sample handler
 handlers.sample = (data, callback) => {
-    callback(706, {'name' : 'sample'})
+    callback(706, {'name' : 'sampler'})
 }
 //NotFound Handler
 handlers.notFound = (data, callback) => {
